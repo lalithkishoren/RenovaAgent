@@ -1,0 +1,740 @@
+
+<!-- =================================================================
+     PUBLIC/DASHBOARD.HTML - EXECUTIVE DASHBOARD
+     ================================================================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Dashboard - Renova Hospitals</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #ecf0f1;
+        }
+        
+        .last-updated {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid #3498db;
+            transition: transform 0.3s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .kpi-card.revenue { border-left-color: #27ae60; }
+        .kpi-card.profit { border-left-color: #f39c12; }
+        .kpi-card.occupancy { border-left-color: #e74c3c; }
+        .kpi-card.satisfaction { border-left-color: #9b59b6; }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .kpi-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .kpi-icon {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+        
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .kpi-change.positive {
+            color: #27ae60;
+        }
+        
+        .kpi-change.negative {
+            color: #e74c3c;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .full-width-chart {
+            grid-column: 1 / -1;
+        }
+        
+        .table-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #7f8c8d;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-right: 1rem;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c66;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .dashboard-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-hospital"></i> Renova Hospitals
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><span class="last-updated">Last Updated: <span id="lastUpdated">Loading...</span></span></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Executive Dashboard</h1>
+            <p class="dashboard-subtitle">Real-time insights and key performance indicators for strategic decision making</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid" id="kpiGrid">
+            <!-- KPI cards will be loaded dynamically -->
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Financial Performance Chart -->
+            <div class="chart-card">
+                <h3 class="chart-title">Revenue & Profit Trends</h3>
+                <div class="chart-container">
+                    <canvas id="financialChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Occupancy Rate Chart -->
+            <div class="chart-card">
+                <h3 class="chart-title">Bed Occupancy Rate</h3>
+                <div class="chart-container">
+                    <canvas id="occupancyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Patient Satisfaction Chart -->
+            <div class="chart-card">
+                <h3 class="chart-title">Patient Satisfaction Trends</h3>
+                <div class="chart-container">
+                    <canvas id="satisfactionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Patient Throughput Chart -->
+            <div class="chart-card">
+                <h3 class="chart-title">Monthly Patient Throughput</h3>
+                <div class="chart-container">
+                    <canvas id="throughputChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Revenue Table -->
+        <div class="table-card">
+            <h3 class="chart-title">Revenue by Department (2024)</h3>
+            <div id="departmentRevenueTable">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading department revenue data...
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Performance Table -->
+        <div class="table-card">
+            <h3 class="chart-title">Department Performance Overview</h3>
+            <div id="staffPerformanceTable">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading staff performance data...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for charts
+        let financialChart, occupancyChart, satisfactionChart, throughputChart;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateLastUpdated();
+            await loadAllDashboardData();
+            
+            // Refresh data every 5 minutes
+            setInterval(async () => {
+                await loadAllDashboardData();
+                updateLastUpdated();
+            }, 300000);
+        });
+        
+        function updateLastUpdated() {
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        }
+        
+        async function loadAllDashboardData() {
+            try {
+                // Load all data in parallel
+                const [overview, financial, operations, quality, staff, strategic] = await Promise.all([
+                    fetch('/api/dashboard/overview').then(r => r.json()),
+                    fetch('/api/dashboard/financial').then(r => r.json()),
+                    fetch('/api/dashboard/operations').then(r => r.json()),
+                    fetch('/api/dashboard/quality').then(r => r.json()),
+                    fetch('/api/dashboard/staff').then(r => r.json()),
+                    fetch('/api/dashboard/strategic').then(r => r.json())
+                ]);
+                
+                // Update KPIs
+                updateKPICards(overview, financial, quality);
+                
+                // Update Charts
+                updateFinancialChart(financial.monthlyTrends);
+                updateOccupancyChart(financial.monthlyTrends);
+                updateSatisfactionChart(quality.satisfactionTrends);
+                updateThroughputChart(operations.monthlyThroughput);
+                
+                // Update Tables
+                updateDepartmentRevenueTable(financial.revenueByDepartment);
+                updateStaffPerformanceTable(staff.performanceByDepartment);
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showError('Failed to load dashboard data. Please check your data file and try again.');
+            }
+        }
+        
+        function updateKPICards(overview, financial, quality) {
+            const kpiGrid = document.getElementById('kpiGrid');
+            
+            // Calculate latest values
+            const latestFinancial = financial.monthlyTrends[financial.monthlyTrends.length - 1] || {};
+            const avgSatisfaction = quality.satisfactionTrends.reduce((sum, item) => sum + parseFloat(item.satisfaction), 0) / quality.satisfactionTrends.length;
+            
+            const kpis = [
+                {
+                    title: 'Monthly Revenue',
+                    value: `${(latestFinancial.revenue || 0).toFixed(1)}M`,
+                    change: '+5.2%',
+                    icon: 'fas fa-dollar-sign',
+                    class: 'revenue',
+                    positive: true
+                },
+                {
+                    title: 'Profit Margin',
+                    value: `${(latestFinancial.profitMargin || 0).toFixed(1)}%`,
+                    change: '+2.1%',
+                    icon: 'fas fa-chart-line',
+                    class: 'profit',
+                    positive: true
+                },
+                {
+                    title: 'Bed Occupancy',
+                    value: `${(latestFinancial.occupancyRate || 0).toFixed(1)}%`,
+                    change: '+1.8%',
+                    icon: 'fas fa-bed',
+                    class: 'occupancy',
+                    positive: true
+                },
+                {
+                    title: 'Patient Satisfaction',
+                    value: `${(avgSatisfaction || 0).toFixed(1)}/10`,
+                    change: '+0.3',
+                    icon: 'fas fa-heart',
+                    class: 'satisfaction',
+                    positive: true
+                },
+                {
+                    title: 'Active Doctors',
+                    value: overview.keyMetrics.totalDoctors,
+                    change: '+3 new',
+                    icon: 'fas fa-user-md',
+                    class: '',
+                    positive: true
+                },
+                {
+                    title: 'Total Patients (2024)',
+                    value: overview.keyMetrics.totalVisits2024.toLocaleString(),
+                    change: '+12.5%',
+                    icon: 'fas fa-users',
+                    class: '',
+                    positive: true
+                }
+            ];
+            
+            kpiGrid.innerHTML = kpis.map(kpi => `
+                <div class="kpi-card ${kpi.class}">
+                    <div class="kpi-header">
+                        <span class="kpi-title">${kpi.title}</span>
+                        <i class="${kpi.icon} kpi-icon"></i>
+                    </div>
+                    <div class="kpi-value">${kpi.value}</div>
+                    <div class="kpi-change ${kpi.positive ? 'positive' : 'negative'}">
+                        <i class="fas fa-arrow-${kpi.positive ? 'up' : 'down'}"></i>
+                        ${kpi.change} vs last month
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateFinancialChart(data) {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            
+            if (financialChart) {
+                financialChart.destroy();
+            }
+            
+            financialChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => item.month),
+                    datasets: [
+                        {
+                            label: 'Revenue ($M)',
+                            data: data.map(item => item.revenue),
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Profit ($M)',
+                            data: data.map(item => item.profit),
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (Millions $)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateOccupancyChart(data) {
+            const ctx = document.getElementById('occupancyChart').getContext('2d');
+            
+            if (occupancyChart) {
+                occupancyChart.destroy();
+            }
+            
+            occupancyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.month),
+                    datasets: [{
+                        label: 'Occupancy Rate (%)',
+                        data: data.map(item => item.occupancyRate),
+                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                        borderColor: '#e74c3c',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Occupancy Rate (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateSatisfactionChart(data) {
+            const ctx = document.getElementById('satisfactionChart').getContext('2d');
+            
+            if (satisfactionChart) {
+                satisfactionChart.destroy();
+            }
+            
+            satisfactionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => item.month),
+                    datasets: [{
+                        label: 'Patient Satisfaction',
+                        data: data.map(item => parseFloat(item.satisfaction)),
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 6,
+                            max: 10,
+                            title: {
+                                display: true,
+                                text: 'Satisfaction Score (1-10)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateThroughputChart(data) {
+            const ctx = document.getElementById('throughputChart').getContext('2d');
+            
+            if (throughputChart) {
+                throughputChart.destroy();
+            }
+            
+            throughputChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.month),
+                    datasets: [
+                        {
+                            label: 'Total Visits',
+                            data: data.map(item => item.totalVisits),
+                            backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                            borderColor: '#3498db',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Emergency Visits',
+                            data: data.map(item => item.emergencyVisits),
+                            backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                            borderColor: '#e74c3c',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Visits'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateDepartmentRevenueTable(data) {
+            const container = document.getElementById('departmentRevenueTable');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="error">No department revenue data available</div>';
+                return;
+            }
+            
+            const table = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Revenue ($M)</th>
+                            <th>Total Visits</th>
+                            <th>Avg Revenue/Visit</th>
+                            <th>Revenue Share</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(dept => `
+                            <tr>
+                                <td><strong>${dept.department}</strong></td>
+                                <td>${dept.revenue.toFixed(2)}M</td>
+                                <td>${dept.total_visits || 'N/A'}</td>
+                                <td>${dept.avg_revenue_per_visit || 'N/A'}</td>
+                                <td>${dept.revenue_percentage || 'N/A'}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+        
+        function updateStaffPerformanceTable(data) {
+            const container = document.getElementById('staffPerformanceTable');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="error">No staff performance data available</div>';
+                return;
+            }
+            
+            const table = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Staff Count</th>
+                            <th>Avg Performance Rating</th>
+                            <th>Patient Satisfaction</th>
+                            <th>Monthly Overtime (hrs)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(dept => `
+                            <tr>
+                                <td><strong>${dept.department}</strong></td>
+                                <td>${dept.staffCount}</td>
+                                <td>${dept.avgPerformanceRating}/5.0</td>
+                                <td>${dept.avgPatientSatisfaction}/10</td>
+                                <td>${dept.avgMonthlyOvertime}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+        
+        function showError(message) {
+            const errorDiv = `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${message}</div>`;
+            document.getElementById('kpiGrid').innerHTML = errorDiv;
+        }
+    </script>
+</body>
+</html>

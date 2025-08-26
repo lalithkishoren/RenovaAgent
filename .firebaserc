@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "default": "codecanyon-landing"
+  },
+  "targets": {},
+  "etags": {
+    "codecanyon-landing": {
+      "extensionInstances": {}
+    }
+  }
+}

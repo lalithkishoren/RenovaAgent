@@ -1,0 +1,31 @@
+{
+  "name": "renova-hospitals-dashboard",
+  "version": "1.0.0",
+  "description": "Executive Dashboard for Renova Hospitals",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@dataconnect/generated": "file:dataconnect-generated/js/example-connector",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "firebase-admin": "^12.0.0",
+    "moment": "^2.29.4",
+    "multer": "^2.0.0",
+    "path": "^0.12.7",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "healthcare",
+    "dashboard",
+    "analytics",
+    "hospital"
+  ],
+  "author": "Healthcare Analytics Team",
+  "license": "MIT"
+}
