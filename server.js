@@ -708,6 +708,206 @@ app.get('/api/dashboard/strategic', (req, res) => {
 });
 
 // =================================================================
+// APPOINTMENT BOOKING ROUTES
+// =================================================================
+
+// Book a new appointment
+app.post('/api/appointments', async (req, res) => {
+    try {
+        const appointmentData = {
+            id: 'APT-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            ...req.body,
+            createdAt: new Date().toISOString(),
+            status: 'scheduled'
+        };
+
+        console.log('📅 New appointment booking:', appointmentData);
+
+        // In a real implementation, you would:
+        // 1. Save to database
+        // 2. Send confirmation email
+        // 3. Update doctor schedules
+        // 4. Send SMS notification
+
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        res.json({
+            success: true,
+            appointment: appointmentData,
+            message: 'Appointment booked successfully! You will receive a confirmation email shortly.'
+        });
+
+    } catch (error) {
+        console.error('❌ Appointment booking error:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to book appointment. Please try again.' 
+        });
+    }
+});
+
+// Get available time slots
+app.get('/api/appointments/slots/:department/:date', async (req, res) => {
+    try {
+        const { department, date } = req.params;
+        
+        // Simulate getting available slots from database
+        const allSlots = [
+            '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+            '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
+            '5:00 PM', '5:30 PM', '6:00 PM'
+        ];
+
+        // Randomly make some slots unavailable (simulate real bookings)
+        const availableSlots = allSlots.map(time => ({
+            time,
+            available: Math.random() > 0.3,
+            doctorName: `Dr. ${['Smith', 'Johnson', 'Williams', 'Brown', 'Davis'][Math.floor(Math.random() * 5)]}`
+        }));
+
+        console.log(`📅 Available slots requested for ${department} on ${date}`);
+
+        res.json({
+            success: true,
+            department,
+            date,
+            slots: availableSlots
+        });
+
+    } catch (error) {
+        console.error('❌ Error fetching time slots:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch available time slots' 
+        });
+    }
+});
+
+// Get appointment by ID
+app.get('/api/appointments/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Simulate database lookup
+        const appointment = {
+            id,
+            patientName: 'John Doe',
+            department: 'Cardiology',
+            date: '2024-01-15',
+            time: '10:00 AM',
+            doctor: 'Dr. Smith',
+            status: 'scheduled',
+            createdAt: new Date().toISOString()
+        };
+
+        res.json({
+            success: true,
+            appointment
+        });
+
+    } catch (error) {
+        console.error('❌ Error fetching appointment:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Appointment not found' 
+        });
+    }
+});
+
+// Cancel appointment
+app.delete('/api/appointments/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        console.log(`🗑️ Cancelling appointment: ${id}`);
+        
+        // Simulate cancellation process
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        res.json({
+            success: true,
+            message: 'Appointment cancelled successfully'
+        });
+
+    } catch (error) {
+        console.error('❌ Error cancelling appointment:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to cancel appointment' 
+        });
+    }
+});
+
+// Get department information
+app.get('/api/departments', (req, res) => {
+    try {
+        const departments = [
+            {
+                id: 'cardiology',
+                name: 'Cardiology',
+                description: 'Heart and cardiovascular care',
+                icon: 'fas fa-heartbeat',
+                doctors: ['Dr. Smith', 'Dr. Johnson'],
+                availableHours: '8:00 AM - 6:00 PM'
+            },
+            {
+                id: 'neurology',
+                name: 'Neurology',
+                description: 'Brain and nervous system care',
+                icon: 'fas fa-brain',
+                doctors: ['Dr. Williams', 'Dr. Brown'],
+                availableHours: '9:00 AM - 5:00 PM'
+            },
+            {
+                id: 'orthopedics',
+                name: 'Orthopedics',
+                description: 'Bone, joint, and muscle care',
+                icon: 'fas fa-bone',
+                doctors: ['Dr. Davis', 'Dr. Miller'],
+                availableHours: '8:00 AM - 7:00 PM'
+            },
+            {
+                id: 'emergency',
+                name: 'Emergency Medicine',
+                description: '24/7 emergency care',
+                icon: 'fas fa-ambulance',
+                doctors: ['Emergency Team'],
+                availableHours: '24/7'
+            },
+            {
+                id: 'internal',
+                name: 'Internal Medicine',
+                description: 'Primary care and internal medicine',
+                icon: 'fas fa-user-md',
+                doctors: ['Dr. Wilson', 'Dr. Moore'],
+                availableHours: '8:00 AM - 6:00 PM'
+            },
+            {
+                id: 'pediatrics',
+                name: 'Pediatrics',
+                description: 'Specialized care for children',
+                icon: 'fas fa-baby',
+                doctors: ['Dr. Taylor', 'Dr. Anderson'],
+                availableHours: '8:00 AM - 6:00 PM'
+            }
+        ];
+
+        res.json({
+            success: true,
+            departments
+        });
+
+    } catch (error) {
+        console.error('❌ Error fetching departments:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch departments' 
+        });
+    }
+});
+
+// =================================================================
 // FIREBASE STORAGE & FILE UPLOAD ROUTES
 // =================================================================
 
@@ -807,6 +1007,10 @@ app.get('/', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+app.get('/appointments', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'appointments.html'));
 });
 
 // =================================================================

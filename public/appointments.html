@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Renova Hospitals</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- VAPI Widget -->
+    <vapi-widget
+      public-key="a5c50fcc-3f45-41cc-ab57-b23f1c978c5e"
+      assistant-id="bf1c7cce-ef20-4979-980c-141b41827fbf"
+      mode="voice"
+      theme="dark"
+      base-bg-color="#000000"
+      accent-color="#14B8A6"
+      cta-button-color="#000000"
+      cta-button-text-color="#ffffff"
+      border-radius="large"
+      size="full"
+      position="bottom-right"
+      title="TALK WITH AI"
+      start-button-text="Start"
+      end-button-text="End Call"
+      chat-first-message="I can help you book an appointment. What type of service do you need?"
+      chat-placeholder="Type your message..."
+      voice-show-transcript="true"
+    ></vapi-widget>
+    <script src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js" async type="text/javascript"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #ecf0f1;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .appointment-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .ai-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .ai-section .section-title {
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            margin: 1rem 0;
+        }
+
+        .btn-ai:hover {
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        .ai-features {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .ai-feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .ai-feature i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #ecf0f1;
+        }
+
+        .ai-feature h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .booking-confirmation {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .booking-confirmation.show {
+            display: block;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action:hover,
+        .quick-action.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .quick-action i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .available-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .time-slot {
+            padding: 0.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .time-slot:hover,
+        .time-slot.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .time-slot.unavailable {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 100px 1rem 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-hospital"></i> Renova Hospitals
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#services">Services</a></li>
+                <li><a href="/appointments.html">Appointments</a></li>
+                <li><a href="/dashboard">Executive Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Online Appointment Booking -->
+        <div class="appointment-section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-plus"></i> Book Your Appointment
+            </h2>
+
+            <div class="booking-confirmation" id="bookingConfirmation">
+                <i class="fas fa-check-circle"></i> 
+                <strong>Appointment Booked Successfully!</strong>
+                <p>Your appointment details have been sent to your email.</p>
+            </div>
+
+            <!-- Quick Service Selection -->
+            <div class="quick-actions">
+                <div class="quick-action" data-service="cardiology">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Cardiology</span>
+                </div>
+                <div class="quick-action" data-service="neurology">
+                    <i class="fas fa-brain"></i>
+                    <span>Neurology</span>
+                </div>
+                <div class="quick-action" data-service="orthopedics">
+                    <i class="fas fa-bone"></i>
+                    <span>Orthopedics</span>
+                </div>
+                <div class="quick-action" data-service="emergency">
+                    <i class="fas fa-ambulance"></i>
+                    <span>Emergency</span>
+                </div>
+            </div>
+
+            <form id="appointmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department/Service *</label>
+                    <select id="department" name="department" required>
+                        <option value="">Select a Department</option>
+                        <option value="cardiology">Cardiology</option>
+                        <option value="neurology">Neurology</option>
+                        <option value="orthopedics">Orthopedics</option>
+                        <option value="emergency">Emergency Medicine</option>
+                        <option value="internal">Internal Medicine</option>
+                        <option value="pediatrics">Pediatrics</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentDate">Preferred Date *</label>
+                        <input type="date" id="appointmentDate" name="appointmentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentTime">Preferred Time</label>
+                        <select id="appointmentTime" name="appointmentTime">
+                            <option value="">Any available time</option>
+                            <option value="morning">Morning (8AM - 12PM)</option>
+                            <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                            <option value="evening">Evening (5PM - 8PM)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Available Time Slots -->
+                <div class="form-group" id="timeSlotsContainer" style="display: none;">
+                    <label>Available Time Slots</label>
+                    <div class="available-slots" id="availableSlots">
+                        <!-- Time slots will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reason">Reason for Visit</label>
+                    <textarea id="reason" name="reason" rows="3" placeholder="Please describe your symptoms or reason for the appointment..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="insurance">Insurance Provider</label>
+                    <select id="insurance" name="insurance">
+                        <option value="">Select Insurance Provider</option>
+                        <option value="blue-cross">Blue Cross Blue Shield</option>
+                        <option value="aetna">Aetna</option>
+                        <option value="cigna">Cigna</option>
+                        <option value="united">UnitedHealthcare</option>
+                        <option value="medicare">Medicare</option>
+                        <option value="medicaid">Medicaid</option>
+                        <option value="self-pay">Self Pay</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-calendar-check"></i> Book Appointment
+                </button>
+            </form>
+        </div>
+
+        <!-- AI Assistant Section -->
+        <div class="ai-section">
+            <h2 class="section-title">
+                <i class="fas fa-robot"></i> AI Voice Assistant
+            </h2>
+            
+            <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+                Book appointments instantly using our intelligent voice assistant. Simply speak naturally and let AI handle the rest.
+            </p>
+
+            <button class="btn btn-ai" onclick="activateVoiceAssistant()">
+                <i class="fas fa-microphone"></i> Start Voice Booking
+            </button>
+
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <i class="fas fa-microphone"></i>
+                    <h4>Natural Voice Commands</h4>
+                    <p>Say "Book cardiology appointment" or "Schedule for next Tuesday"</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h4>Smart Scheduling</h4>
+                    <p>AI automatically finds the best available slots based on your preferences</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-clock"></i>
+                    <h4>Real-time Availability</h4>
+                    <p>Instant access to doctor schedules and appointment slots</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>HIPAA Compliant</h4>
+                    <p>Secure handling of all medical and personal information</p>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                <h4><i class="fas fa-lightbulb"></i> Voice Commands You Can Use:</h4>
+                <ul style="list-style: none; padding: 0; margin: 1rem 0;">
+                    <li>💬 "I need a cardiology appointment"</li>
+                    <li>💬 "Book me for next Friday morning"</li>
+                    <li>💬 "Check available slots for Dr. Smith"</li>
+                    <li>💬 "Emergency appointment needed"</li>
+                    <li>💬 "Cancel my appointment"</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('appointmentDate').min = today;
+
+        // Quick service selection
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', function() {
+                // Remove selected class from all actions
+                document.querySelectorAll('.quick-action').forEach(a => a.classList.remove('selected'));
+                // Add selected class to clicked action
+                this.classList.add('selected');
+                
+                // Set the department dropdown
+                const service = this.dataset.service;
+                document.getElementById('department').value = service;
+                
+                // Trigger time slot loading
+                loadTimeSlots();
+            });
+        });
+
+        // Department change handler
+        document.getElementById('department').addEventListener('change', loadTimeSlots);
+        document.getElementById('appointmentDate').addEventListener('change', loadTimeSlots);
+
+        // Load available time slots
+        async function loadTimeSlots() {
+            const department = document.getElementById('department').value;
+            const date = document.getElementById('appointmentDate').value;
+            
+            if (!department || !date) {
+                document.getElementById('timeSlotsContainer').style.display = 'none';
+                return;
+            }
+
+            const slotsContainer = document.getElementById('availableSlots');
+            const container = document.getElementById('timeSlotsContainer');
+            
+            // Show loading state
+            container.style.display = 'block';
+            slotsContainer.innerHTML = '<div style="text-align: center; padding: 1rem;">Loading available slots...</div>';
+
+            try {
+                // Simulate API call to get available time slots
+                const slots = await getAvailableTimeSlots(department, date);
+                
+                slotsContainer.innerHTML = slots.map(slot => `
+                    <div class="time-slot ${slot.available ? '' : 'unavailable'}" 
+                         data-time="${slot.time}" 
+                         ${slot.available ? 'onclick="selectTimeSlot(this)"' : ''}>
+                        ${slot.time}
+                        ${slot.available ? '' : '<br><small>Booked</small>'}
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                slotsContainer.innerHTML = '<div style="text-align: center; color: #e74c3c;">Error loading time slots. Please try again.</div>';
+            }
+        }
+
+        // Simulate getting available time slots
+        async function getAvailableTimeSlots(department, date) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const timeSlots = [
+                '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+                '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
+                '5:00 PM', '5:30 PM', '6:00 PM'
+            ];
+            
+            // Randomly make some slots unavailable
+            return timeSlots.map(time => ({
+                time,
+                available: Math.random() > 0.3
+            }));
+        }
+
+        // Select time slot
+        function selectTimeSlot(element) {
+            if (element.classList.contains('unavailable')) return;
+            
+            // Remove selected class from all slots
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+            // Add selected class to clicked slot
+            element.classList.add('selected');
+        }
+
+        // Form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const selectedTimeSlot = document.querySelector('.time-slot.selected');
+            
+            if (selectedTimeSlot) {
+                formData.append('specificTime', selectedTimeSlot.dataset.time);
+            }
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Simulate API call to book appointment
+                await bookAppointment(Object.fromEntries(formData));
+                
+                // Show success message
+                document.getElementById('bookingConfirmation').classList.add('show');
+                
+                // Reset form
+                this.reset();
+                document.getElementById('timeSlotsContainer').style.display = 'none';
+                document.querySelectorAll('.quick-action.selected').forEach(a => a.classList.remove('selected'));
+                
+                // Scroll to confirmation
+                document.getElementById('bookingConfirmation').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                
+            } catch (error) {
+                alert('Error booking appointment. Please try again or call us directly.');
+            } finally {
+                // Restore button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Simulate appointment booking API
+        async function bookAppointment(appointmentData) {
+            console.log('Booking appointment:', appointmentData);
+            
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // In a real implementation, this would send data to your backend
+            // Example: 
+            // const response = await fetch('/api/appointments', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(appointmentData)
+            // });
+            // return response.json();
+            
+            return { success: true, appointmentId: 'APT-' + Math.random().toString(36).substr(2, 9) };
+        }
+
+        // Activate voice assistant
+        function activateVoiceAssistant() {
+            // The VAPI widget should automatically handle voice interactions
+            // This function provides additional user feedback
+            
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #9b59b6;
+                color: white;
+                padding: 2rem;
+                border-radius: 15px;
+                z-index: 10001;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-microphone" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                <h3>Voice Assistant Activated</h3>
+                <p>Look for the voice assistant widget in the bottom right corner.<br>
+                Click it and say: "I want to book an appointment"</p>
+                <button onclick="this.parentNode.remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: white; color: #9b59b6; border: none; border-radius: 5px; cursor: pointer;">Got it!</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
